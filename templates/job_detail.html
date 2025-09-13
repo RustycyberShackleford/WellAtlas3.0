@@ -1,0 +1,9 @@
+
+<!doctype html><html><head><title>WellAtlas 3.0 — Job</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head><body>
+<div class="header-top"><h1 id="appTitle">WellAtlas 3.0</h1></div>
+<main class="wrap"><section class="card">
+<h2>{{ site['customer'] }} — {{ site['name'] }} — Job #{{ job['job_number'] }}</h2>
+<p>{{ job['description'] or '' }}</p>
+<h3>Notes</h3>
+<ul>{% for n in notes %}<li>{{ n['created_at'] }} — {{ n['body'] }}</li>{% endfor %}</ul>
+</section></main></body></html>
