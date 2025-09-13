@@ -126,7 +126,7 @@ def site_detail(site_id):
     jobs=[dict(r) for r in cur.fetchall()]; c.close()
     return render_template("site_detail.html", site=dict(site), jobs=jobs)
 
-@app.route("/jobs")
+@app.route("/jobs", endpoint="jobs_index")
 def jobs_index():
     c=db(); cur=c.cursor()
     cur.execute("""
