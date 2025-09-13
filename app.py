@@ -77,7 +77,7 @@ def seed_data():
                      f"Static level ~{static} ft; predicted drawdown {draw} ft at duty flow. Test pumping, chlorination, panel inspection, flow verification. "
                      "Deliverables: as-built, coordinates, pump curve, bacteriological test, and start-up checklist.")
 
-            cur.execute("""INSERT INTO jobs(site_id,job_number,job_category,description,depth_ft,casing_diameter_in,pump_hp,flow_rate_gpm,static_level_ft,drawdown_ft,install_date,status)
+            cur.execute("""INSERT INTO (site_id,job_number,job_category,description,depth_ft,casing_diameter_in,pump_hp,flow_rate_gpm,static_level_ft,drawdown_ft,install_date,status)
                          VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""", (sid, str(job_no), cat, jdesc, depth, casing, pump, flow, static, draw, str(today), status))
             jid = cur.lastrowid
 
@@ -122,11 +122,11 @@ def site_detail(site_id):
     cur.execute("SELECT sites.*, customers.name as customer FROM sites JOIN customers ON customers.id=sites.customer_id WHERE sites.id=?", (site_id,))
     site=cur.fetchone()
     if not site: c.close(); abort(404)
-    cur.execute("SELECT * FROM jobs WHERE site_id=? ORDER BY job_number", (site_id,))
+    cur.execute("SELECT * FROM  WHERE site_id=? ORDER BY job_number", (site_id,))
     jobs=[dict(r) for r in cur.fetchall()]; c.close()
     return render_template("site_detail.html", site=dict(site), jobs=jobs)
 
-@app.route("/jobs", endpoint="jobs_index")
+@app.get("/jobs", endpoint="jobs_index")
 def jobs_index():
     c=db(); cur=c.cursor()
     cur.execute("""
@@ -141,6 +141,10 @@ def jobs_index():
     rows = [dict(r) for r in cur.fetchall()]
     c.close()
     return render_template("jobs.html", jobs=rows)
+# Alias route in case anything else intercepts /jobs
+@app.get("/jobs_index")
+def jobs_index_alias():
+    return jobs_index()
 
 @app.route("/site/<int:site_id>/job/<int:job_id>")
 def job_detail(site_id,job_id):
